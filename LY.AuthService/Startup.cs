@@ -46,7 +46,7 @@ namespace LY.AuthService
                     Description = "ÊÚÈ¨·þÎñ",
                 });
                 var basePath = AppContext.BaseDirectory;
-                var xmlPath = Path.Combine(basePath+"//xml", "LY.AuthService.xml");
+                var xmlPath = Path.Combine(basePath+"//xmls", "LY.AuthService.xml");
                 c.IncludeXmlComments(xmlPath);
 
                 c.OperationFilter<AddResponseHeadersFilter>();

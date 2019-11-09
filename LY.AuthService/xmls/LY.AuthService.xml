@@ -16,6 +16,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:LY.AuthService.Controllers.HealthController.Get">
+            <summary>
+            健康检查
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:LY.AuthService.Controllers.HomeController.GetEnvironment">
             <summary>
             获取当前环境变量

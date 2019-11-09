@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Consul;
 using IdentityServer4.AccessTokenValidation;
 using LY.AuthService.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -69,11 +70,12 @@ namespace LY.AuthService
                     options.Authority = Configuration["IdentityServerOptions:Authority"];
                     options.RequireHttpsMetadata = bool.Parse(Configuration["IdentityServerOptions:RequireHttpsMetadata"]);
                 });
+        
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -81,9 +83,35 @@ namespace LY.AuthService
             }
 
             app.UseRouting();
-            app.UseInitServiceProvider();
+            //app.UseInitServiceProvider();
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/auth/swagger.json", "auth doc"); });
+            
+            #region consul
+
+            //请求注册的Consul地址
+            var consulClient = new ConsulClient(x => x.Address = new Uri($"http://{Configuration["Consul:IP"]}:{Configuration["Consul:Port"]}"));
+            var httpCheck = new AgentServiceCheck()
+            {
+                DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(5),
+                Interval = TimeSpan.FromSeconds(10),
+                HTTP = $"http://{Configuration["Service:IP"]}:{Configuration["Service:Port"]}/api/health",
+                Timeout = TimeSpan.FromSeconds(5)
+            };
+            var registration = new AgentServiceRegistration()
+            {
+                Checks = new[] { httpCheck },
+                ID = Guid.NewGuid().ToString(),
+                Name = Configuration["Service:Name"],
+                Address = Configuration["Service:IP"],
+                Port = int.Parse(Configuration["Service:Port"]),
+                Tags = new[] { $"urlprefix-/{Configuration["Service:Name"]}" } //添加 urlprefix-/servicename 格式的 tag 标签，以便 Fabio 识别
+            };
+            consulClient.Agent.ServiceRegister(registration).Wait();
+            lifetime.ApplicationStopping.Register(() => { consulClient.Agent.ServiceDeregister(registration.ID).Wait(); }); //服务停止时取消注册
+
+            #endregion
+
             app.UseIdentityServer();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

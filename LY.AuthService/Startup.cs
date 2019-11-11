@@ -83,10 +83,15 @@ namespace LY.AuthService
             }
 
             app.UseRouting();
-            //app.UseInitServiceProvider();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/auth/swagger.json", "auth doc"); });
-            
+            app.UseInitServiceProvider();
+            app.UseSwagger(c => { c.RouteTemplate = "{documentName}/swagger.json"; });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/auth/swagger.json", "auth doc");
+                c.RoutePrefix = string.Empty;
+            });
+            app.UseIdentityServer();
+            app.UseAuthorization();
             #region consul
 
             //请求注册的Consul地址
@@ -111,9 +116,6 @@ namespace LY.AuthService
             lifetime.ApplicationStopping.Register(() => { consulClient.Agent.ServiceDeregister(registration.ID).Wait(); }); //服务停止时取消注册
 
             #endregion
-
-            app.UseIdentityServer();
-            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LY.AuthService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("auth/api/[controller]")]
     [ApiController]
     public class HealthController : ControllerBase
     {

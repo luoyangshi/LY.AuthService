@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LY.AuthService.Controllers
 {
-    [Route("authservice/api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class HomeController : ControllerBase
     {

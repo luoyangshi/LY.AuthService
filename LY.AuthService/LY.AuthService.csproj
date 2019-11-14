@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>H:\Code\LY.AuthService\LY.AuthService\xmls\LY.AuthService.xml</DocumentationFile>
+    <DocumentationFile>F:\Test\LY.AuthService\LY.AuthService\xmls\LY.AuthService.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

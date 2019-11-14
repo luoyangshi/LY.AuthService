@@ -19,8 +19,8 @@ namespace LY.AuthService
         {
             return new List<ApiResource>()
             {
-                new ApiResource("AuthService","授权服务"),
-                new ApiResource("OrderService","订单服务")
+                new ApiResource("authservice","授权服务"),
+                new ApiResource("orderservice","订单服务")
             };
         }
 
@@ -49,8 +49,8 @@ namespace LY.AuthService
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "AuthService",
-                        "OrderService"
+                        "authservice",
+                        "orderservice"
                     }
                 },
                 new Client()
@@ -68,10 +68,9 @@ namespace LY.AuthService
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "AuthService",
-                        "OrderService"
+                        "authservice",
+                        "orderservice"
                     }
-
                 }
             };
         }

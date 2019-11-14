@@ -47,7 +47,7 @@ namespace LY.AuthService
                     Description = "授权服务",
                 });
                 var basePath = AppContext.BaseDirectory;
-                var xmlPath = Path.Combine(basePath+"//xmls", "LY.AuthService.xml");
+                var xmlPath = Path.Combine(basePath + "//xmls", "LY.AuthService.xml");
                 c.IncludeXmlComments(xmlPath);
 
                 c.OperationFilter<AddResponseHeadersFilter>();
@@ -63,19 +63,17 @@ namespace LY.AuthService
             });
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                .AddIdentityServerAuthentication( options =>
-                {
-                    options.ApiName = Configuration["IdentityServerOptions:ApiName"];
-                    options.ApiSecret = Configuration["IdentityServerOptions:ApiSecret"];
-                    options.Authority = Configuration["IdentityServerOptions:Authority"];
-                    options.RequireHttpsMetadata = bool.Parse(Configuration["IdentityServerOptions:RequireHttpsMetadata"]);
-                });
-        
-
+                .AddIdentityServerAuthentication(options =>
+               {
+                   options.ApiName = Configuration["IdentityServerOptions:ApiName"];
+                   options.ApiSecret = Configuration["IdentityServerOptions:ApiSecret"];
+                   options.Authority = Configuration["IdentityServerOptions:Authority"];
+                   options.RequireHttpsMetadata = bool.Parse(Configuration["IdentityServerOptions:RequireHttpsMetadata"]);
+               });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             if (env.IsDevelopment())
             {
@@ -88,10 +86,10 @@ namespace LY.AuthService
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/auth/swagger.json", "auth doc");
-                c.RoutePrefix = string.Empty;
             });
             app.UseIdentityServer();
             app.UseAuthorization();
+
             #region consul
 
             //请求注册的Consul地址
@@ -115,7 +113,8 @@ namespace LY.AuthService
             consulClient.Agent.ServiceRegister(registration).Wait();
             lifetime.ApplicationStopping.Register(() => { consulClient.Agent.ServiceDeregister(registration.ID).Wait(); }); //服务停止时取消注册
 
-            #endregion
+            #endregion consul
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
